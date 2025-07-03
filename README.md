@@ -1,6 +1,10 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
  # 加密货币交易系统
+=======
+# 加密货币交易系统
+>>>>>>> Stashed changes
 =======
 # 加密货币交易系统
 >>>>>>> Stashed changes
@@ -75,7 +79,10 @@ python backend/app.py
 在前端界面中：
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -97,7 +104,10 @@ python backend/app.py
 系统会显示：
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -117,7 +127,10 @@ python backend/app.py
 ### 更新API配置
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -138,7 +151,10 @@ Content-Type: application/json
 ### 获取交易对
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -150,7 +166,10 @@ GET /api/symbols
 ### 获取K线数据
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -162,7 +181,10 @@ GET /api/ohlcv?symbol=BTC/USDT&timeframe=1h&limit=100
 ### 获取资金费率
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -174,7 +196,10 @@ GET /api/funding_rate?symbol=BTC/USDT
 ### 获取实时价格
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -186,7 +211,10 @@ GET /api/ticker?symbol=BTC/USDT
 ### 获取分析数据
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -211,7 +239,11 @@ python test_api_config.py
 4. **数据准确性**: 价差分析仅供参考，实际交易需考虑手续费等因素
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 5. **交易对类型**:
+=======
+5. **交易对类型**: 
+>>>>>>> Stashed changes
 =======
 5. **交易对类型**: 
 >>>>>>> Stashed changes
@@ -237,7 +269,10 @@ MIT License
 欢迎提交Issue和Pull Request！
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 
@@ -248,6 +283,10 @@ MIT License
 - [English Version](README_EN.md) - English documentation
 - [Nederlandse Versie](README_NL.md) - Nederlandse documentatie
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+- [中文版本](README.md) - 中文文档（当前版本） 
+>>>>>>> Stashed changes
+=======
 - [中文版本](README.md) - 中文文档（当前版本） 
 >>>>>>> Stashed changes
 =======
