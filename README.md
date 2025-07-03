@@ -178,9 +178,3 @@ MIT License
 - [English Version](README_EN.md) - English documentation
 - [Nederlandse Versie](README_NL.md) - Nederlandse documentatie
 - [中文版本](README.md) - 中文文档（当前版本） 
-
-- [中文版本](README.md) - 中文文档（当前版本） 
->>>>>>> Stashed changes
-=======
-- [中文版本](README.md) - 中文文档（当前版本） 
->>>>>>> Stashed changes
