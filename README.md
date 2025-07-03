@@ -1,14 +1,4 @@
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
- # 加密货币交易系统
-=======
-# 加密货币交易系统
->>>>>>> Stashed changes
-=======
-# 加密货币交易系统
->>>>>>> Stashed changes
-=======
+
 # 加密货币交易系统
 >>>>>>> Stashed changes
 
