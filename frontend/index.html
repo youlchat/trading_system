@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加密货币交易系统</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .data-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .data-card {
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .data-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .data-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .chart-container {
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .chart-container h3 {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #ffe6e6;
+            color: #d63031;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #fab1a0;
+        }
+
+        .success {
+            background: #e6ffe6;
+            color: #00b894;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #55a3ff;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .data-section,
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 加密货币交易系统</h1>
+            <p>实时监控币安和欧易的价差与资金费率</p>
+        </div>
+
+        <div class="main-content">
+            <!-- 配置区域 -->
+            <div class="form-section">
+                <h2>🔧 系统配置</h2>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="binanceApiKey">币安 API Key:</label>
+                        <input type="password" id="binanceApiKey" placeholder="输入币安API密钥">
+                    </div>
+                    <div class="form-group">
+                        <label for="binanceSecret">币安 Secret:</label>
+                        <input type="password" id="binanceSecret" placeholder="输入币安Secret">
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="okxApiKey">欧易 API Key:</label>
+                        <input type="password" id="okxApiKey" placeholder="输入欧易API密钥">
+                    </div>
+                    <div class="form-group">
+                        <label for="okxSecret">欧易 Secret:</label>
+                        <input type="password" id="okxSecret" placeholder="输入欧易Secret">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="okxPassword">欧易 Password:</label>
+                    <input type="password" id="okxPassword" placeholder="输入欧易Password">
+                </div>
+            </div>
+
+            <!-- 交易对选择 -->
+            <div class="form-section">
+                <h2>📊 交易对选择</h2>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="symbolSelect">选择交易对:</label>
+                        <select id="symbolSelect">
+                            <option value="BTC/USDT">BTC/USDT</option>
+                            <option value="ETH/USDT">ETH/USDT</option>
+                            <option value="BNB/USDT">BNB/USDT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="timeframeSelect">时间周期:</label>
+                        <select id="timeframeSelect">
+                            <option value="1m">1分钟</option>
+                            <option value="5m">5分钟</option>
+                            <option value="15m">15分钟</option>
+                            <option value="1h" selected>1小时</option>
+                            <option value="4h">4小时</option>
+                            <option value="1d">1天</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn" onclick="loadData()">🔄 加载数据</button>
+                <button class="btn" onclick="startAutoRefresh()">▶️ 开始自动刷新</button>
+                <button class="btn" onclick="stopAutoRefresh()">⏹️ 停止自动刷新</button>
+            </div>
+
+            <!-- 实时数据展示 -->
+            <div class="data-section">
+                <div class="data-card">
+                    <h3>💰 价格对比</h3>
+                    <div id="priceData">
+                        <div class="loading">点击"加载数据"开始...</div>
+                    </div>
+                </div>
+                <div class="data-card">
+                    <h3>📈 资金费率对比</h3>
+                    <div id="fundingData">
+                        <div class="loading">点击"加载数据"开始...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 价差分析 -->
+            <div class="data-section">
+                <div class="data-card">
+                    <h3>📊 价差分析</h3>
+                    <div id="priceAnalysis">
+                        <div class="loading">点击"加载数据"开始...</div>
+                    </div>
+                </div>
+                <div class="data-card">
+                    <h3>📊 资金费率差分析</h3>
+                    <div id="fundingAnalysis">
+                        <div class="loading">点击"加载数据"开始...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="chart-container">
+                <h3>📈 价格走势图</h3>
+                <div id="priceChart"></div>
+            </div>
+
+            <div class="chart-container">
+                <h3>📊 价差与资金费率差对比图</h3>
+                <div id="comparisonChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval = null;
+        const API_BASE = 'http://localhost:5000/api';
+
+        // 加载数据
+        async function loadData() {
+            try {
+                showLoading();
+                
+                const symbol = document.getElementById('symbolSelect').value;
+                const timeframe = document.getElementById('timeframeSelect').value;
+                
+                // 获取K线数据
+                const ohlcvResponse = await fetch(`${API_BASE}/ohlcv?symbol=${symbol}&timeframe=${timeframe}&limit=100`);
+                const ohlcvData = await ohlcvResponse.json();
+                
+                // 获取资金费率
+                const fundingResponse = await fetch(`${API_BASE}/funding_rate?symbol=${symbol}`);
+                const fundingData = await fundingResponse.json();
+                
+                // 获取分析数据
+                const analysisResponse = await fetch(`${API_BASE}/analysis?symbol=${symbol}`);
+                const analysisData = await analysisResponse.json();
+                
+                // 更新UI
+                updatePriceData(ohlcvData);
+                updateFundingData(fundingData);
+                updateAnalysisData(analysisData);
+                updateCharts(ohlcvData, analysisData);
+                
+                showSuccess('数据加载成功！');
+                
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                showError('加载数据失败: ' + error.message);
+            }
+        }
+
+        // 更新价格数据
+        function updatePriceData(data) {
+            const priceDiv = document.getElementById('priceData');
+            
+            if (data.binance && data.binance.length > 0 && data.okx && data.okx.length > 0) {
+                const binanceLatest = data.binance[data.binance.length - 1];
+                const okxLatest = data.okx[data.okx.length - 1];
+                
+                priceDiv.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <strong>币安价格:</strong>
+                        <div class="data-value">$${binanceLatest.close.toFixed(2)}</div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>欧易价格:</strong>
+                        <div class="data-value">$${okxLatest.close.toFixed(2)}</div>
+                    </div>
+                    <div>
+                        <strong>价差:</strong>
+                        <div class="data-value" style="color: ${Math.abs(binanceLatest.close - okxLatest.close) > 10 ? '#e74c3c' : '#27ae60'}">
+                            $${Math.abs(binanceLatest.close - okxLatest.close).toFixed(2)}
+                        </div>
+                    </div>
+                `;
+            } else {
+                priceDiv.innerHTML = '<div class="error">无法获取价格数据</div>';
+            }
+        }
+
+        // 更新资金费率数据
+        function updateFundingData(data) {
+            const fundingDiv = document.getElementById('fundingData');
+            
+            if (data.binance && data.binance.funding_rate !== undefined && 
+                data.okx && data.okx.funding_rate !== undefined) {
+                
+                const binanceRate = (data.binance.funding_rate * 100).toFixed(4);
+                const okxRate = (data.okx.funding_rate * 100).toFixed(4);
+                const rateDiff = Math.abs(data.binance.funding_rate - data.okx.funding_rate) * 100;
+                
+                fundingDiv.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <strong>币安资金费率:</strong>
+                        <div class="data-value" style="color: ${data.binance.funding_rate > 0 ? '#e74c3c' : '#27ae60'}">
+                            ${binanceRate}%
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>欧易资金费率:</strong>
+                        <div class="data-value" style="color: ${data.okx.funding_rate > 0 ? '#e74c3c' : '#27ae60'}">
+                            ${okxRate}%
+                        </div>
+                    </div>
+                    <div>
+                        <strong>费率差:</strong>
+                        <div class="data-value" style="color: ${rateDiff > 0.01 ? '#e74c3c' : '#27ae60'}">
+                            ${rateDiff.toFixed(4)}%
+                        </div>
+                    </div>
+                `;
+            } else {
+                fundingDiv.innerHTML = '<div class="error">无法获取资金费率数据</div>';
+            }
+        }
+
+        // 更新分析数据
+        function updateAnalysisData(data) {
+            if (data.error) {
+                document.getElementById('priceAnalysis').innerHTML = '<div class="error">分析数据获取失败</div>';
+                document.getElementById('fundingAnalysis').innerHTML = '<div class="error">分析数据获取失败</div>';
+                return;
+            }
+            
+            // 价差分析
+            const priceAnalysisDiv = document.getElementById('priceAnalysis');
+            priceAnalysisDiv.innerHTML = `
+                <div style="margin-bottom: 10px;">
+                    <strong>价差百分比:</strong>
+                    <div class="data-value">${data.price_analysis.price_difference_percent.toFixed(4)}%</div>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>绝对价差:</strong>
+                    <div class="data-value">$${data.price_analysis.price_difference.toFixed(2)}</div>
+                </div>
+                <div>
+                    <strong>套利机会:</strong>
+                    <div class="data-value" style="color: ${data.price_analysis.price_difference_percent > 0.1 ? '#e74c3c' : '#27ae60'}">
+                        ${data.price_analysis.price_difference_percent > 0.1 ? '高' : '低'}
+                    </div>
+                </div>
+            `;
+            
+            // 资金费率分析
+            const fundingAnalysisDiv = document.getElementById('fundingAnalysis');
+            fundingAnalysisDiv.innerHTML = `
+                <div style="margin-bottom: 10px;">
+                    <strong>费率差:</strong>
+                    <div class="data-value">${(data.funding_analysis.funding_difference * 100).toFixed(4)}%</div>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>套利方向:</strong>
+                    <div class="data-value">
+                        ${data.funding_analysis.binance_funding > data.funding_analysis.okx_funding ? '币安做空，欧易做多' : '币安做多，欧易做空'}
+                    </div>
+                </div>
+                <div>
+                    <strong>套利机会:</strong>
+                    <div class="data-value" style="color: ${data.funding_analysis.funding_difference > 0.001 ? '#e74c3c' : '#27ae60'}">
+                        ${data.funding_analysis.funding_difference > 0.001 ? '高' : '低'}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 更新图表
+        function updateCharts(ohlcvData, analysisData) {
+            // 价格走势图
+            if (ohlcvData.binance && ohlcvData.binance.length > 0 && ohlcvData.okx && ohlcvData.okx.length > 0) {
+                const binanceTrace = {
+                    x: ohlcvData.binance.map(d => d.timestamp),
+                    y: ohlcvData.binance.map(d => d.close),
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: '币安',
+                    line: { color: '#667eea' }
+                };
+                
+                const okxTrace = {
+                    x: ohlcvData.okx.map(d => d.timestamp),
+                    y: ohlcvData.okx.map(d => d.close),
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: '欧易',
+                    line: { color: '#764ba2' }
+                };
+                
+                const layout = {
+                    title: '价格走势对比',
+                    xaxis: { title: '时间' },
+                    yaxis: { title: '价格 (USDT)' },
+                    height: 400
+                };
+                
+                Plotly.newPlot('priceChart', [binanceTrace, okxTrace], layout);
+            }
+            
+            // 对比图
+            if (!analysisData.error) {
+                const comparisonTrace = {
+                    x: ['价差百分比', '资金费率差'],
+                    y: [
+                        analysisData.price_analysis.price_difference_percent,
+                        analysisData.funding_analysis.funding_difference * 100
+                    ],
+                    type: 'bar',
+                    marker: {
+                        color: ['#667eea', '#764ba2']
+                    }
+                };
+                
+                const layout = {
+                    title: '价差与资金费率差对比',
+                    yaxis: { title: '百分比 (%)' },
+                    height: 400
+                };
+                
+                Plotly.newPlot('comparisonChart', [comparisonTrace], layout);
+            }
+        }
+
+        // 开始自动刷新
+        function startAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            autoRefreshInterval = setInterval(loadData, 30000); // 30秒刷新一次
+            showSuccess('自动刷新已启动 (30秒间隔)');
+        }
+
+        // 停止自动刷新
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+                showSuccess('自动刷新已停止');
+            }
+        }
+
+        // 显示加载状态
+        function showLoading() {
+            // 可以添加加载动画
+        }
+
+        // 显示成功消息
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            document.querySelector('.main-content').insertBefore(successDiv, document.querySelector('.form-section'));
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        // 显示错误消息
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            document.querySelector('.main-content').insertBefore(errorDiv, document.querySelector('.form-section'));
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 可以在这里添加初始化代码
+            console.log('交易系统已加载');
+        });
+    </script>
+</body>
+</html> 
