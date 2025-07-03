@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
  # 加密货币交易系统
+=======
+# 加密货币交易系统
+>>>>>>> Stashed changes
 
 一个实时监控币安和欧易交易所价差与资金费率的交易系统，支持动态API配置。
 
@@ -65,7 +69,10 @@ python backend/app.py
 ### 1. 配置API密钥
 
 在前端界面中：
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 1. 输入币安API密钥和Secret
 2. 输入欧易API密钥、Secret和Password
 3. 点击"🔧 更新API配置"按钮
@@ -81,7 +88,10 @@ python backend/app.py
 ### 3. 查看分析结果
 
 系统会显示：
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 - **价格对比**: 两个交易所的实时价格和价差
 - **资金费率对比**: 资金费率和费率差
 - **价差分析**: 价差百分比和套利机会评估
@@ -95,7 +105,10 @@ python backend/app.py
 ## API接口
 
 ### 更新API配置
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 ```
 POST /api/update_config
 Content-Type: application/json
@@ -110,31 +123,46 @@ Content-Type: application/json
 ```
 
 ### 获取交易对
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 ```
 GET /api/symbols
 ```
 
 ### 获取K线数据
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 ```
 GET /api/ohlcv?symbol=BTC/USDT&timeframe=1h&limit=100
 ```
 
 ### 获取资金费率
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 ```
 GET /api/funding_rate?symbol=BTC/USDT
 ```
 
 ### 获取实时价格
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 ```
 GET /api/ticker?symbol=BTC/USDT
 ```
 
 ### 获取分析数据
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 ```
 GET /api/analysis?symbol=BTC/USDT
 ```
@@ -153,7 +181,11 @@ python test_api_config.py
 2. **网络连接**: 需要稳定的网络连接访问交易所API
 3. **频率限制**: 系统已启用频率限制，避免触发API限制
 4. **数据准确性**: 价差分析仅供参考，实际交易需考虑手续费等因素
+<<<<<<< Updated upstream
 5. **交易对类型**:
+=======
+5. **交易对类型**: 
+>>>>>>> Stashed changes
    - 现货交易对（如 `BTC/USDT`）没有资金费率，只显示价差分析
    - 合约交易对（如 `BTC/USDT:USDT`）有资金费率，显示完整的价差和资金费率分析
 6. **合约格式**: 不同交易所的合约格式可能不同，建议使用 `:USDT` 格式的线性合约
@@ -171,3 +203,14 @@ MIT License
 ## 贡献
 
 欢迎提交Issue和Pull Request！
+<<<<<<< Updated upstream
+=======
+
+---
+
+## 多语言版本 / Multi-language Versions
+
+- [English Version](README_EN.md) - English documentation
+- [Nederlandse Versie](README_NL.md) - Nederlandse documentatie
+- [中文版本](README.md) - 中文文档（当前版本） 
+>>>>>>> Stashed changes

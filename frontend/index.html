@@ -224,6 +224,7 @@
                     <label for="okxPassword">欧易 Password:</label>
                     <input type="password" id="okxPassword" placeholder="输入欧易Password">
                 </div>
+                <button class="btn" onclick="updateApiConfig()">🔧 更新API配置</button>
             </div>
 
             <!-- 交易对选择 -->
@@ -233,9 +234,16 @@
                     <div class="form-group">
                         <label for="symbolSelect">选择交易对:</label>
                         <select id="symbolSelect">
-                            <option value="BTC/USDT">BTC/USDT</option>
-                            <option value="ETH/USDT">ETH/USDT</option>
-                            <option value="BNB/USDT">BNB/USDT</option>
+                            <optgroup label="现货交易对">
+                                <option value="BTC/USDT">BTC/USDT (现货)</option>
+                                <option value="ETH/USDT">ETH/USDT (现货)</option>
+                                <option value="BNB/USDT">BNB/USDT (现货)</option>
+                            </optgroup>
+                            <optgroup label="合约交易对">
+                                <option value="BTC/USDT:USDT">BTC/USDT:USDT (合约)</option>
+                                <option value="ETH/USDT:USDT">ETH/USDT:USDT (合约)</option>
+                                <option value="BNB/USDT:USDT">BNB/USDT:USDT (合约)</option>
+                            </optgroup>
                         </select>
                     </div>
                     <div class="form-group">
@@ -302,12 +310,61 @@
 
     <script>
         let autoRefreshInterval = null;
-        const API_BASE = 'http://localhost:5000/api';
+        const API_BASE = 'http://localhost:5001/api';
+
+        // 更新API配置
+        async function updateApiConfig() {
+            try {
+                const binanceApiKey = document.getElementById('binanceApiKey').value;
+                const binanceSecret = document.getElementById('binanceSecret').value;
+                const okxApiKey = document.getElementById('okxApiKey').value;
+                const okxSecret = document.getElementById('okxSecret').value;
+                const okxPassword = document.getElementById('okxPassword').value;
+
+                const configData = {
+                    binance_api_key: binanceApiKey,
+                    binance_secret: binanceSecret,
+                    okx_api_key: okxApiKey,
+                    okx_secret: okxSecret,
+                    okx_password: okxPassword
+                };
+
+                const response = await fetch(`${API_BASE}/update_config`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(configData)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('API配置已更新！');
+                    return true;
+                } else {
+                    showError('API配置更新失败: ' + (result.error || '未知错误'));
+                    return false;
+                }
+            } catch (error) {
+                console.error('更新API配置失败:', error);
+                showError('更新API配置失败: ' + error.message);
+                return false;
+            }
+        }
 
         // 加载数据
         async function loadData() {
             try {
                 showLoading();
+                
+                // 尝试更新API配置（如果用户已输入）
+                const binanceApiKey = document.getElementById('binanceApiKey').value;
+                const okxApiKey = document.getElementById('okxApiKey').value;
+                
+                if (binanceApiKey || okxApiKey) {
+                    await updateApiConfig();
+                }
                 
                 const symbol = document.getElementById('symbolSelect').value;
                 const timeframe = document.getElementById('timeframeSelect').value;
@@ -316,13 +373,29 @@
                 const ohlcvResponse = await fetch(`${API_BASE}/ohlcv?symbol=${symbol}&timeframe=${timeframe}&limit=100`);
                 const ohlcvData = await ohlcvResponse.json();
                 
+                // 检查是否有错误
+                if (ohlcvData.error) {
+                    showError('获取K线数据失败: ' + ohlcvData.error);
+                    return;
+                }
+                
                 // 获取资金费率
                 const fundingResponse = await fetch(`${API_BASE}/funding_rate?symbol=${symbol}`);
                 const fundingData = await fundingResponse.json();
                 
+                if (fundingData.error) {
+                    showError('获取资金费率失败: ' + fundingData.error);
+                    return;
+                }
+                
                 // 获取分析数据
                 const analysisResponse = await fetch(`${API_BASE}/analysis?symbol=${symbol}`);
                 const analysisData = await analysisResponse.json();
+                
+                if (analysisData.error) {
+                    showError('获取分析数据失败: ' + analysisData.error);
+                    return;
+                }
                 
                 // 更新UI
                 updatePriceData(ohlcvData);
@@ -370,6 +443,22 @@
         // 更新资金费率数据
         function updateFundingData(data) {
             const fundingDiv = document.getElementById('fundingData');
+            
+            // 检查是否为现货交易对
+            if (data.is_spot) {
+                fundingDiv.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 1.2em; color: #666; margin-bottom: 10px;">
+                            📊 现货交易对
+                        </div>
+                        <div style="color: #999;">
+                            现货交易对没有资金费率<br>
+                            如需查看资金费率，请选择合约交易对
+                        </div>
+                    </div>
+                `;
+                return;
+            }
             
             if (data.binance && data.binance.funding_rate !== undefined && 
                 data.okx && data.okx.funding_rate !== undefined) {
@@ -432,24 +521,50 @@
             
             // 资金费率分析
             const fundingAnalysisDiv = document.getElementById('fundingAnalysis');
-            fundingAnalysisDiv.innerHTML = `
-                <div style="margin-bottom: 10px;">
-                    <strong>费率差:</strong>
-                    <div class="data-value">${(data.funding_analysis.funding_difference * 100).toFixed(4)}%</div>
-                </div>
-                <div style="margin-bottom: 10px;">
-                    <strong>套利方向:</strong>
-                    <div class="data-value">
-                        ${data.funding_analysis.binance_funding > data.funding_analysis.okx_funding ? '币安做空，欧易做多' : '币安做多，欧易做空'}
+            const fundingAnalysis = data.funding_analysis;
+            
+            if (fundingAnalysis.note) {
+                // 现货交易对
+                fundingAnalysisDiv.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 1.2em; color: #666; margin-bottom: 10px;">
+                            📊 现货交易对
+                        </div>
+                        <div style="color: #999;">
+                            现货交易对无资金费率<br>
+                            只显示价差分析
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <strong>套利机会:</strong>
-                    <div class="data-value" style="color: ${data.funding_analysis.funding_difference > 0.001 ? '#e74c3c' : '#27ae60'}">
-                        ${data.funding_analysis.funding_difference > 0.001 ? '高' : '低'}
+                `;
+            } else if (fundingAnalysis.error) {
+                // 资金费率获取失败
+                fundingAnalysisDiv.innerHTML = `
+                    <div class="error">
+                        资金费率获取失败<br>
+                        ${fundingAnalysis.error}
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                // 合约交易对正常显示
+                fundingAnalysisDiv.innerHTML = `
+                    <div style="margin-bottom: 10px;">
+                        <strong>费率差:</strong>
+                        <div class="data-value">${(fundingAnalysis.funding_difference * 100).toFixed(4)}%</div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>套利方向:</strong>
+                        <div class="data-value">
+                            ${fundingAnalysis.binance_funding > fundingAnalysis.okx_funding ? '币安做空，欧易做多' : '币安做多，欧易做空'}
+                        </div>
+                    </div>
+                    <div>
+                        <strong>套利机会:</strong>
+                        <div class="data-value" style="color: ${fundingAnalysis.funding_difference > 0.001 ? '#e74c3c' : '#27ae60'}">
+                            ${fundingAnalysis.funding_difference > 0.001 ? '高' : '低'}
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         // 更新图表
@@ -484,13 +599,15 @@
                 Plotly.newPlot('priceChart', [binanceTrace, okxTrace], layout);
             }
             
-            // 对比图
-            if (!analysisData.error) {
+            // 对比图 - 检查是否为现货交易对
+            const fundingAnalysis = analysisData.funding_analysis;
+            if (fundingAnalysis && !fundingAnalysis.note && !fundingAnalysis.error) {
+                // 合约交易对显示价差和资金费率对比
                 const comparisonTrace = {
                     x: ['价差百分比', '资金费率差'],
                     y: [
                         analysisData.price_analysis.price_difference_percent,
-                        analysisData.funding_analysis.funding_difference * 100
+                        fundingAnalysis.funding_difference * 100
                     ],
                     type: 'bar',
                     marker: {
@@ -500,6 +617,24 @@
                 
                 const layout = {
                     title: '价差与资金费率差对比',
+                    yaxis: { title: '百分比 (%)' },
+                    height: 400
+                };
+                
+                Plotly.newPlot('comparisonChart', [comparisonTrace], layout);
+            } else {
+                // 现货交易对只显示价差
+                const comparisonTrace = {
+                    x: ['价差百分比'],
+                    y: [analysisData.price_analysis.price_difference_percent],
+                    type: 'bar',
+                    marker: {
+                        color: ['#667eea']
+                    }
+                };
+                
+                const layout = {
+                    title: '价差分析 (现货交易对)',
                     yaxis: { title: '百分比 (%)' },
                     height: 400
                 };
